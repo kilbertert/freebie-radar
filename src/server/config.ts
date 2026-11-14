@@ -25,6 +25,8 @@ const bool = (env: EnvSource, key: string, fallback: boolean) => {
 
 function build(env: EnvSource) {
   return {
+    port: num(env, "PORT", 8788),
+    host: str(env, "HOST", "127.0.0.1"),
     databasePath: str(env, "DATABASE_PATH", "./data/radar.db"),
 
     httpProxy: str(env, "HTTP_PROXY"),

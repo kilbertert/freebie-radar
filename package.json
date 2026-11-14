@@ -8,18 +8,22 @@
   },
   "scripts": {
     "dev": "wrangler dev",
+    "dev:node": "tsx watch src/node.ts",
     "dev:web": "vite",
     "build": "vite build",
     "deploy": "vite build && wrangler deploy",
+    "start": "tsx src/node.ts",
     "test": "node --test tests/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@hono/node-server": "^1.14.4",
     "fast-xml-parser": "^4.5.3",
     "hono": "^4.9.10",
     "lucide-react": "^0.545.0",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "tsx": "^4.20.5"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20251111.0",
@@ -30,7 +34,6 @@
     "@vitejs/plugin-react": "^5.0.3",
     "playwright": "^1.65.0",
     "tailwindcss": "^4.1.14",
-    "tsx": "^4.20.5",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
     "wrangler": "^4.46.0"

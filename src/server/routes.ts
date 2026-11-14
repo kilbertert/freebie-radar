@@ -123,6 +123,8 @@ const SORTS: Record<string, string> = {
   oldest: "COALESCE(published_at, first_seen_at) ASC",
   expiring: "CASE WHEN expires_at IS NULL THEN 1 ELSE 0 END ASC, expires_at ASC, score DESC",
   price_asc: "CASE WHEN is_free = 1 THEN 0 WHEN price IS NOT NULL THEN price ELSE 999999 END ASC, score DESC",
+  /** 配合 after_id 做增量轮询游标（rakazo 类消费方） */
+  id: "id ASC",
 };
 
 function buildItemsQuery(q: Record<string, string | undefined>, rules: BlockRule[], includeBlocked: boolean) {
@@ -181,6 +183,14 @@ function buildItemsQuery(q: Record<string, string | undefined>, rules: BlockRule
   if (q.since) {
     where.push("COALESCE(published_at, first_seen_at) >= ?");
     params.push(q.since);
+  }
+  // 增量游标：id 自增主键，比时间戳 since 更严格（同刻多条不漏不重）
+  if (q.after_id) {
+    const aid = Number(q.after_id);
+    if (Number.isInteger(aid) && aid >= 0) {
+      where.push("id > ?");
+      params.push(aid);
+    }
   }
   // 「未过期」拆成两个独立条件，避免 (A OR B) 这种写法让索引整体失效：
   //  1) 保鲜期：源没给截止时间时按发布时间算，否则 28 天前的老帖会被当成现役福利
